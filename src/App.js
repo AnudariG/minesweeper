@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState } from 'react';
+import {Box} from '@mui/material'
+
+import TopBanner from "./pages/TopBanner";
+import Board from './pages/Board';
+import OpeningPage from "./pages/OpeningPage";
+
 
 function App() {
+  const [difficulty, setDifficulty] = useState('');
+  const resetCallback = () => {
+    setDifficulty('');
+  }
+
+  const setGameDifficulty = (difficulty) => {
+    setDifficulty(difficulty);
+  }
+  console.log("difficulty: ", difficulty);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <TopBanner resetCallback={resetCallback}/>
+      <Box sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+      }}>
+      {difficulty ?
+        (<Board difficulty={difficulty} />) :
+        (<OpeningPage setGameDifficulty={setGameDifficulty}/>)
+      }
+      </Box>
+    </Fragment>
   );
 }
 
