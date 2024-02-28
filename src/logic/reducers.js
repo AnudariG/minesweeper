@@ -23,7 +23,8 @@ const create_initial_state = (difficulty) => {
   return {
     board,
     clickedMine: 'false',
-    difficulty: difficulty
+    difficulty: difficulty,
+    activeFlag: false
   }
 }
 
@@ -50,7 +51,14 @@ const reducers = (state, action) => {
     case ACTIONS.REVEAL_CELL:
       return {...state, /* Update board state */};
     case ACTIONS.FLAG_CELL:
-      return {...state, /* Update board state */};
+      return {
+        ...state,
+      };
+    case ACTIONS.SET_FLAG:
+      return {
+        ...state,
+        activeFlag: true,
+      };
     case ACTIONS.INIT_BOARD:
       return {
         ...state,

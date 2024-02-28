@@ -17,11 +17,17 @@ const buttonTextStyle = {
   color: 'black',
   fontSize: "12px",
 }
-const BoardControls = () => {
+const BoardControls = ({dispatch}) => {
+  const handleFlagClick = () => {
+    dispatch({
+      type: 'SET_FLAG'
+    })
+  }
+
   return (
     <Box sx={controlsBoxStyle}>
-      <Button variant="outlined">
-        <FlagIcon sx={{color: 'black'}}/>
+      <Button variant="outlined" onClick={handleFlagClick}>
+        <FlagIcon sx={{color: 'black'}} />
       </Button>
       <Button variant="outlined">
         <Typography sx={buttonTextStyle}>

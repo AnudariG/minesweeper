@@ -26,11 +26,11 @@ const MinesAndTimer = ({difficulty}) => {
   )
 }
 
-const Cell = ({cell_content}) => {
+const Cell = ({cell_content, handleCellClick}) => {
   let backgroundColor = cell_content.isMine ? 'red' : 'grey';
 
   return(
-    <Box sx={{
+    <Box onClick={() => handleCellClick} sx={{
       width: sizes.cell_width,
       height: sizes.cell_height,
       border: 1,
@@ -42,14 +42,14 @@ const Cell = ({cell_content}) => {
   )
 };
 
-const Row = ({row, difficulty}) => {
+const Row = ({row, difficulty, handleCellClick}) => {
   return(
     <Fragment>
       <Grid container columns={sizes[difficulty].num_columns}>
         {
-          row.map((cell_content, cell_idx) => {
-            return <Grid item key={cell_idx} xs={1}> 
-              <Cell cell_content={cell_content}/>
+          row.map((cell_content, col_idx) => {
+            return <Grid item key={col_idx} xs={1}> 
+              <Cell cell_content={cell_content} handleCellClick={() => handleCellClick(col_idx)}/>
             </Grid>
           })
         }
@@ -59,10 +59,12 @@ const Row = ({row, difficulty}) => {
 };
 
 function Board({difficulty}) {
-  // const [state, dispatch] = useReducer(reducers, undefined, create_initial_state);
-  // console.log("in board: difficulty is ", difficulty);
   const [state, dispatch] = useReducer(reducers, difficulty, create_initial_state);
   const {board} = state;
+
+  const handleCellClick = (row_idx, col_idx) => {
+    console.log(row_idx, col_idx);
+  }
 
   useEffect(() => {
     dispatch({type: 'INIT_BOARD', payload: difficulty})
@@ -90,12 +92,13 @@ function Board({difficulty}) {
           {
             board.map((row, row_idx) => {
               return <Grid item key={row_idx} xs={1}>
-                <Row row={row} difficulty={difficulty}/>
+                <Row row={row} difficulty={difficulty} 
+                  handleCellClick={(col_idx) => handleCellClick(row_idx, col_idx)} />
               </Grid>
             })
           }
         </Grid>
-        <Controls />
+        <Controls dispatch={dispatch}/>
       </Box>
     </Fragment>
   )
