@@ -38,6 +38,28 @@ const start_game = (state) => {
   }
 }
 
+const flag_cell = (state, {row_idx, col_idx}) => {
+  console.log("row and col: ", row_idx, col_idx);
+  const {board, activeFlag} = state;
+  if(activeFlag){
+    const new_board = board.slice();
+    new_board[row_idx][col_idx] = {
+      ...board[row_idx][col_idx],
+      backgroundColor: 'pink',
+      isFlagged: true
+    }
+    console.log("new board (reducers)", new_board);
+
+    return {
+      ...state,
+      board: new_board
+    }
+
+  }else{
+    return;
+  }
+}
+
 // handle state updates based on actions
 const reducers = (state, action) => {
   switch (action.type){
@@ -59,6 +81,10 @@ const reducers = (state, action) => {
         ...state,
         activeFlag: true,
       };
+
+    case ACTIONS.PLACE_FLAG:
+      return flag_cell(state, action.payload)
+
     case ACTIONS.INIT_BOARD:
       return {
         ...state,

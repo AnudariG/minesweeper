@@ -30,7 +30,7 @@ const Cell = ({cell_content, handleCellClick}) => {
   let backgroundColor = cell_content.isMine ? 'red' : 'grey';
 
   return(
-    <Box onClick={() => handleCellClick} sx={{
+    <Box onClick={handleCellClick} sx={{
       width: sizes.cell_width,
       height: sizes.cell_height,
       border: 1,
@@ -60,10 +60,19 @@ const Row = ({row, difficulty, handleCellClick}) => {
 
 function Board({difficulty}) {
   const [state, dispatch] = useReducer(reducers, difficulty, create_initial_state);
-  const {board} = state;
+  const {board, activeFlag} = state;
 
+  // USER CELL CONTROL
   const handleCellClick = (row_idx, col_idx) => {
-    console.log(row_idx, col_idx);
+    if(activeFlag) {
+      dispatch({
+        type: "PLACE_FLAG",
+        payload: {row_idx, col_idx}
+      })
+      return;
+    }
+    console.log(`row_idx, col_idx: ${row_idx}, ${col_idx}`);
+    console.log(`activeFlag: ${activeFlag}`)
   }
 
   useEffect(() => {
