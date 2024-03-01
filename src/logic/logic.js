@@ -1,4 +1,3 @@
-import {ACTIONS} from "./reducers";
 import sizes from "../utils/sizes";
 
 export const initState = () => {
@@ -9,14 +8,36 @@ export const initState = () => {
   }
 }
 
-// basic level init board function
-export const initBoard = (difficulty) => {
-  
+export const start_game = (state) => {
+  const {difficulty} = state;
 
-  // generate random positions for the mines
-  // board = generateRandomMines(board, difficulty);
+  return {
+    ...state,
+    difficulty: difficulty,
+    gameState: 'active',
+  }
+}
 
-  // return board;
+export const place_flag = (state, {row_idx, col_idx}) => {
+  console.log("row and col: ", row_idx, col_idx);
+  const {board, activeFlag} = state;
+  if(activeFlag){
+    const new_board = board.slice();
+    new_board[row_idx][col_idx] = {
+      ...board[row_idx][col_idx],
+      isFlagged: true,
+    }
+    console.log("new board (reducers)", new_board);
+
+    return {
+      ...state,
+      activeFlag: false,
+      board: new_board
+    }
+
+  }else{
+    return;
+  }
 }
 
 // FUNCTION 1: generate random mines

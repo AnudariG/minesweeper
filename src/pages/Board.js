@@ -1,12 +1,15 @@
-import React, {Fragment, useEffect, useReducer, useState} from 'react';
-import {Box, Grid, Button, Typography} from '@mui/material'
+import React, {Fragment, useEffect, useReducer} from 'react';
+import {Box, Grid, Typography} from '@mui/material'
 
 import Controls from './BoardControls'
-import OpeningPage from './OpeningPage'
-import {initBoard} from "../logic/logic";
 
 import sizes from '../utils/sizes';
-import { create_initial_state, reducers, start_game } from '../logic/reducers';
+import { create_initial_state } from '../logic/initialState';
+import { reducers } from '../logic/reducers'
+
+
+// flag
+const flagIcon = "\u{1F6A9}"
 
 const minesAndTimerBoxStyle = {
   border: "1px solid lightblue",
@@ -26,8 +29,10 @@ const MinesAndTimer = ({difficulty}) => {
   )
 }
 
-const Cell = ({cell_content, handleCellClick}) => {
-  let backgroundColor = cell_content.isMine ? 'red' : 'grey';
+const Cell = ({cell_obj, handleCellClick}) => {
+  let backgroundColor = cell_obj.isMine ? 'red' : 'grey';
+  let cell_copy = {...cell_obj};
+  cell_copy.content = cell_obj.isFlagged ? flagIcon : cell_obj.content;
 
   return(
     <Box onClick={handleCellClick} sx={{
@@ -36,8 +41,11 @@ const Cell = ({cell_content, handleCellClick}) => {
       border: 1,
       borderColor: 'white',
       backgroundColor: backgroundColor,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     }}>
-
+      {cell_copy.content}
     </Box>
   )
 };
@@ -47,9 +55,9 @@ const Row = ({row, difficulty, handleCellClick}) => {
     <Fragment>
       <Grid container columns={sizes[difficulty].num_columns}>
         {
-          row.map((cell_content, col_idx) => {
+          row.map((cell_obj, col_idx) => {
             return <Grid item key={col_idx} xs={1}> 
-              <Cell cell_content={cell_content} handleCellClick={() => handleCellClick(col_idx)}/>
+              <Cell cell_obj={cell_obj} handleCellClick={() => handleCellClick(col_idx)}/>
             </Grid>
           })
         }
@@ -64,6 +72,12 @@ function Board({difficulty}) {
 
   // USER CELL CONTROL
   const handleCellClick = (row_idx, col_idx) => {
+    const clicked_cell = board[row_idx][col_idx];
+
+    console.log(`activeFlag: ${activeFlag}`)
+    console.log(`cell isFlagged: ${clicked_cell.isFlagged}`)
+
+
     if(activeFlag) {
       dispatch({
         type: "PLACE_FLAG",
@@ -71,8 +85,13 @@ function Board({difficulty}) {
       })
       return;
     }
-    console.log(`row_idx, col_idx: ${row_idx}, ${col_idx}`);
-    console.log(`activeFlag: ${activeFlag}`)
+    if(clicked_cell.isFlagged){
+      dispatch({
+        type: "REMOVE_FLAG",
+        payload: {row_idx, col_idx}
+      })
+    }
+    return;
   }
 
   useEffect(() => {

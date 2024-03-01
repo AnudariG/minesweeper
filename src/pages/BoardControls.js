@@ -20,7 +20,7 @@ const buttonTextStyle = {
 const BoardControls = ({dispatch}) => {
   const handleFlagClick = () => {
     dispatch({
-      type: 'SET_FLAG'
+      type: 'SET_FLAG_TRUE'
     })
   }
 
