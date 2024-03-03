@@ -1,4 +1,5 @@
-import {place_flag} from "./logic";
+import {place_flag, remove_flag, reveal_all_mines,
+        reveal_all_cells, reveal_cell, start_timer} from "./logic";
 
 // handle state updates based on actions
 export const reducers = (state, action) => {
@@ -10,29 +11,27 @@ export const reducers = (state, action) => {
         board: action.payload.board,
         gameState: 'playing'
       };
+
     case 'REVEAL_CELL':
-      return {...state, /* Update board state */};
+      return reveal_cell(state, action.payload);
+
     case 'SET_FLAG_TRUE':
-      return {
-        ...state,
-        activeFlag: true,
-      };
+      return { ...state, activeFlag: true };
+
     case 'PLACE_FLAG':
       return place_flag(state, action.payload);
 
+    case 'TOGGLE_MINES_REVEAL':
+      return reveal_all_mines(state);
+
+    case 'TOGGLE_ALL_CELLS_REVEAL':
+      return reveal_all_cells(state);
+
     case 'REMOVE_FLAG':
-      const { row_idx, col_idx } = action.payload;
-      const updatedBoard = state.board.map((row, i) =>
-        i === row_idx
-          ? row.map((cell, j) =>
-            j === col_idx ? { ...cell, isFlagged: false } : cell
-          )
-          : row
-      );
-      return {
-        ...state,
-        board: updatedBoard
-      };
+      return remove_flag(state, action.payload);
+
+    case 'START_TIMER':
+      return start_timer(state);
 
     default:
       return state;

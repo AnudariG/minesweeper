@@ -14,25 +14,39 @@ const flagIcon = "\u{1F6A9}"
 const minesAndTimerBoxStyle = {
   border: "1px solid lightblue",
   borderRadius: '5px',
-  padding: '1rem'
+  padding: '0.7rem'
 }
-const MinesAndTimer = ({difficulty}) => {
+
+const timerTextStyle = {
+  fontFamily: "Kode Mono, monospace",
+  textTransform: 'lowercase',
+  color: 'black',
+  fontSize: "15px",
+}
+
+const MinesAndTimer = ({ numOfMines, timer }) => {
+  let timerStr = timer.toString();
+  timerStr = timerStr.padStart(3, '0');
   return(
-    <Box sx={{display: "flex", justifyContent: "space-evenly", gap: "2rem", padding: '1rem'}}>
-      <Box sx={minesAndTimerBoxStyle}>
-        <Typography>Mines: {sizes[difficulty].num_mines}</Typography>
+    <Box sx={{display: "flex", justifyContent: "space-evenly", gap: "2rem", padding: '1rem'}} >
+      <Box sx={minesAndTimerBoxStyle} >
+        <Typography sx={timerTextStyle} >
+          Mines: {numOfMines}
+        </Typography>
       </Box>
       <Box sx={minesAndTimerBoxStyle}>
-        <Typography>Timer: 000</Typography>
+        <Typography sx={timerTextStyle} >
+          Timer: {timerStr}
+        </Typography>
       </Box>
     </Box>
   )
 }
 
 const Cell = ({cell_obj, handleCellClick}) => {
-  let backgroundColor = cell_obj.isMine ? 'red' : 'grey';
+  // let backgroundColor = cell_obj.isMine ? 'red' : 'grey';
   let cell_copy = {...cell_obj};
-  cell_copy.content = cell_obj.isFlagged ? flagIcon : cell_obj.content;
+  // cell_copy.content = cell_obj.isFlagged ? flagIcon : cell_obj.content;
 
   return(
     <Box onClick={handleCellClick} sx={{
@@ -40,12 +54,18 @@ const Cell = ({cell_obj, handleCellClick}) => {
       height: sizes.cell_height,
       border: 1,
       borderColor: 'white',
-      backgroundColor: backgroundColor,
+      backgroundColor: cell_obj.backgroundColor,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-      {cell_copy.content}
+      {
+        (cell_copy.isRevealed || cell_copy.isVisible) && cell_copy.numOfNeighborMines > 0
+          ? cell_copy.numOfNeighborMines // Display the number of neighbor mines if it's greater than 0
+          : (cell_copy.isRevealed || cell_copy.isVisible) && cell_copy.isMine
+            ? cell_copy.content // Display the mine content if the cell is a mine
+            : (cell_copy.isFlagged ? flagIcon : null) // Display the flag icon if the cell is flagged
+      }
     </Box>
   )
 };
@@ -68,7 +88,7 @@ const Row = ({row, difficulty, handleCellClick}) => {
 
 function Board({difficulty}) {
   const [state, dispatch] = useReducer(reducers, difficulty, create_initial_state);
-  const {board, activeFlag} = state;
+  const {board, activeFlag, gameOver, numOfMines, timer} = state;
 
   // USER CELL CONTROL
   const handleCellClick = (row_idx, col_idx) => {
@@ -77,21 +97,28 @@ function Board({difficulty}) {
     console.log(`activeFlag: ${activeFlag}`)
     console.log(`cell isFlagged: ${clicked_cell.isFlagged}`)
 
-
     if(activeFlag) {
       dispatch({
         type: "PLACE_FLAG",
         payload: {row_idx, col_idx}
       })
-      return;
+      return; // no futher action
     }
+
     if(clicked_cell.isFlagged){
       dispatch({
         type: "REMOVE_FLAG",
         payload: {row_idx, col_idx}
       })
+      return; // no futher action
     }
-    return;
+
+    if(!gameOver) {
+      dispatch({
+        type: "REVEAL_CELL",
+        payload: {row_idx, col_idx}
+      });
+    }
   }
 
   useEffect(() => {
@@ -107,13 +134,13 @@ function Board({difficulty}) {
       <Box sx={{
           width: board_width() + 100,
           height: board_height() + 100,
-          mt: 10,
+          mt: 6,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column"
       }}>
-        <MinesAndTimer difficulty={difficulty}/>
+        <MinesAndTimer numOfMines={numOfMines} timer={timer}/>
         <Grid container columns={1}
           sx={{width: board_width(),
               height: board_height()}}>

@@ -8,7 +8,8 @@ const controlsBoxStyle = {
   mt: "1rem",
   display: "flex",
   gap: "2rem",
-  borderColor: 'grey'
+  borderColor: 'grey',
+  mb: "5rem"
 };
 
 const buttonTextStyle = {
@@ -24,18 +25,30 @@ const BoardControls = ({dispatch}) => {
     })
   }
 
+  const handleRevealMinesClick = () => {
+    dispatch({
+      type: 'TOGGLE_MINES_REVEAL'
+    })
+  }
+
+  const handleRevealAllCellsClick = () => {
+    dispatch({
+      type: 'TOGGLE_ALL_CELLS_REVEAL'
+    })
+  }
+
   return (
     <Box sx={controlsBoxStyle}>
-      <Button variant="outlined" onClick={handleFlagClick}>
+      <Button variant="outlined" onClick={handleFlagClick} >
         <FlagIcon sx={{color: 'black'}} />
       </Button>
       <Button variant="outlined">
-        <Typography sx={buttonTextStyle}>
-          Show all <img src={mineImg} alt="Mine" style={{width: '25px', height: '25px'}}/>
+        <Typography sx={buttonTextStyle} onClick={handleRevealMinesClick} >
+          Show all <img src={mineImg} alt="Mine" style={{width: '25px', height: '25px'}} />
         </Typography>
       </Button>
       <Button variant="outlined">
-        <Typography sx={buttonTextStyle}>
+        <Typography sx={buttonTextStyle} onClick={handleRevealAllCellsClick}>
           Show all cells
         </Typography>
       </Button>
