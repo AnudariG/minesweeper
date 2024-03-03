@@ -119,8 +119,13 @@ export const reveal_all_mines = (state) => {
 // Let a user place flag on cells when the activeFlag if true
 export const place_flag = (state, {row_idx, col_idx}) => {
   const { board, activeFlag } = state;
+  const cell = board[row_idx][col_idx];
 
-  if(activeFlag){
+  if (cell && cell.isRevealed) {
+    return state; // Cell is already revealed, do nothing
+  }
+
+  if(activeFlag) {
     const new_board = board.map(row => [...row]);
     new_board[row_idx][col_idx] = {
       ...board[row_idx][col_idx],
@@ -133,9 +138,9 @@ export const place_flag = (state, {row_idx, col_idx}) => {
       board: new_board,
       numOfMines: state.numOfMines - 1
     }
-  }else{ // otherwise do nothing
-    return;
   }
+
+  return state;
 }
 
 export const remove_flag = (state, {row_idx, col_idx}) => {
