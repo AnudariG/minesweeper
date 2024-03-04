@@ -61,6 +61,8 @@ export const create_initial_state = (difficulty) => {
     activeFlag: false,
     numOfMines: sizes[difficulty].num_mines,
     timer: 0,
-    timerStarted: false,
+    isTimerRunning: false,
+    gameOver: false,
+    history: []
   }
 }

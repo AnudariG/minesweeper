@@ -2,6 +2,7 @@ import React, {Fragment, useEffect, useReducer} from 'react';
 import {Box, Grid, Typography} from '@mui/material'
 
 import Controls from './BoardControls'
+import GameStats from "./GameStats";
 
 import sizes from '../utils/sizes';
 import { create_initial_state } from '../logic/initialState';
@@ -10,38 +11,6 @@ import { reducers } from '../logic/reducers'
 
 // flag
 const flagIcon = "\u{1F6A9}"
-
-const minesAndTimerBoxStyle = {
-  border: "1px solid lightblue",
-  borderRadius: '5px',
-  padding: '0.7rem'
-}
-
-const timerTextStyle = {
-  fontFamily: "Kode Mono, monospace",
-  textTransform: 'lowercase',
-  color: 'black',
-  fontSize: "15px",
-}
-
-const MinesAndTimer = ({ numOfMines, timer }) => {
-  let timerStr = timer.toString();
-  timerStr = timerStr.padStart(3, '0');
-  return(
-    <Box sx={{display: "flex", justifyContent: "space-evenly", gap: "2rem", padding: '1rem'}} >
-      <Box sx={minesAndTimerBoxStyle} >
-        <Typography sx={timerTextStyle} >
-          Mines: {numOfMines}
-        </Typography>
-      </Box>
-      <Box sx={minesAndTimerBoxStyle}>
-        <Typography sx={timerTextStyle} >
-          Timer: {timerStr}
-        </Typography>
-      </Box>
-    </Box>
-  )
-}
 
 const Cell = ({cell_obj, handleCellClick}) => {
   // let backgroundColor = cell_obj.isMine ? 'red' : 'grey';
@@ -88,14 +57,17 @@ const Row = ({row, difficulty, handleCellClick}) => {
 
 function Board({difficulty}) {
   const [state, dispatch] = useReducer(reducers, difficulty, create_initial_state);
-  const {board, activeFlag, gameOver, numOfMines, timer} = state;
+  const {board, activeFlag, gameOver, isTimerRunning, numOfMines, timer} = state;
 
   // USER CELL CONTROL
   const handleCellClick = (row_idx, col_idx) => {
     const clicked_cell = board[row_idx][col_idx];
 
-    console.log(`activeFlag: ${activeFlag}`)
-    console.log(`cell isFlagged: ${clicked_cell.isFlagged}`)
+    if (!isTimerRunning) {
+      dispatch({
+        type: 'START_TIMER'
+      });
+    }
 
     if(activeFlag) {
       dispatch({
@@ -140,7 +112,7 @@ function Board({difficulty}) {
           justifyContent: "center",
           flexDirection: "column"
       }}>
-        <MinesAndTimer numOfMines={numOfMines} timer={timer}/>
+        <GameStats dispatch={dispatch} state={state} />
         <Grid container columns={1}
           sx={{width: board_width(),
               height: board_height()}}>

@@ -4,22 +4,23 @@ import {Box} from '@mui/material'
 import TopBanner from "./pages/TopBanner";
 import Board from './pages/Board';
 import OpeningPage from "./pages/OpeningPage";
+import sizes from "./utils/sizes";
 
 
 function App() {
   const [difficulty, setDifficulty] = useState('');
   const resetCallback = () => {
     setDifficulty('');
+
   }
 
   const setGameDifficulty = (difficulty) => {
     setDifficulty(difficulty);
   }
-  console.log("difficulty: ", difficulty);
 
   return (
     <Fragment>
-      <TopBanner resetCallback={resetCallback}/>
+      <TopBanner resetCallback={resetCallback} />
       <Box sx={{
           display: "flex",
           alignItems: "center",

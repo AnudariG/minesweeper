@@ -59,10 +59,12 @@ export const reveal_cell = (state, {row_idx, col_idx}) => {
           // recursively reveal neighboring cells if the cell is empty
           reveal_neighbors(board, i, j);
         }
-        return { ...cell, isRevealed: true, backgroundColor: 'gainsboro' }
+        return { ...cell, isRevealed: true,
+                backgroundColor: 'gainsboro' }
       } else if (board[row_idx][col_idx].isMine){
         game_over = true;
-        return { ...cell, isRevealed: true, backgroundColor: '#FFCCCB' }
+        return { ...cell, isRevealed: true,
+                backgroundColor: '#FFCCCB', isTimerRunning: false }
       } else {
         return cell;
       }
@@ -150,7 +152,11 @@ export const remove_flag = (state, {row_idx, col_idx}) => {
         j === col_idx ? { ...cell, isFlagged: false } : cell
       ) : row
   );
-  return { ...state, board: updatedBoard };
+  return {
+    ...state,
+    numOfMines: state.numOfMines + 1,
+    board: updatedBoard
+  };
 }
 
 // Unicode to place mines
